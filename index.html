@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>S19 MADA Game</title>
+<style>
+    body {
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(120deg, #1e3c72, #2a5298);
+        color: white;
+        text-align: center;
+        overflow-x: hidden;
+    }
+
+    h1 {
+        margin-top: 40px;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+
+    #menu, #welcome, #game, #result, #shop {
+        display: none;
+    }
+
+    .version {
+        position: absolute;
+        bottom: 5px;
+        right: 10px;
+        font-size: 0.8em;
+        opacity: 0.7;
+    }
+
+    input[type=text] {
+        padding: 10px;
+        border: none;
+        border-radius: 10px;
+        width: 60%;
+        font-size: 1.1em;
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    button {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 10px;
+        margin-top: 20px;
+        background: #00bcd4;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #008c9e;
+    }
+
+    .question-box {
+        background: rgba(255,255,255,0.1);
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px auto;
+        width: 80%;
+        font-size: 1.3em;
+    }
+
+    .choices {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .choice {
+        background: rgba(255,255,255,0.15);
+        padding: 10px;
+        width: 70%;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .choice:hover {
+        background: rgba(255,255,255,0.25);
+    }
+
+    .correct {
+        background-color: #4CAF50 !important;
+    }
+
+    .wrong {
+        background-color: #f44336 !important;
+    }
+
+    #money-box {
+        position: fixed;
+        right: 5px;
+        top: 5px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 0.9em;
+    }
+
+    .fade-in {
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    #message {
+        color: yellow;
+        font-size: 0.9em;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+    <div id="menu" class="fade-in">
+        <h1>S19 MADA Game</h1>
+        <input type="text" id="playerName" placeholder="Entrez votre nom" />
+        <button onclick="validateName()">OK</button>
+        <p id="message"></p>
+        <div class="version">Version 1.0<br>Auteur : SYLVAIN SOLOFONIAINA</div>
+    </div>
+
+    <div id="welcome" class="fade-in">
+        <h1>Bienvenue dans S19 MADA Game !</h1>
+        <p>Nous vous souhaitons bonne chance ! 🌟</p>
+        <button onclick="goToMode()">Continuer</button>
+    </div>
+
+    <div id="modeSelect" class="fade-in">
+        <h2>Choisissez votre mode :</h2>
+        <button onclick="startGame('classique')">Mode Classique</button>
+        <button onclick="startGame('nouveau')">Mode Nouveau</button>
+        <button onclick="openShop()">Achats</button>
+    </div>
+
+    <div id="shop" class="fade-in">
+        <h2>Boutique (Achats)</h2>
+        <p>🚧 Option non disponible pour le moment 🚧</p>
+        <button onclick="backToMode()">Retour</button>
+    </div>
+
+    <div id="game" class="fade-in">
+        <div id="money-box"></div>
+        <div class="question-box" id="questionBox"></div>
+        <div class="choices" id="choices"></div>
+    </div>
+
+    <div id="result" class="fade-in">
+        <h2 id="resultText"></h2>
+        <p id="errorMessage"></p>
+        <button onclick="restart()">Rejouer</button>
+    </div>
+
+<script>
+    const AUTHOR = "SYLVAIN SOLOFONIAINA";
+    let playerName = "";
+    let mode = "";
+    let money = 0;
+    let questionIndex = 0;
+
+    const moneyLevels = [500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 250000, 500000, 1000000];
+    const questions = [
+        { q: "What is the capital of France?", a: ["Paris", "London", "Rome", "Berlin"], correct: 0 },
+        { q: "Which planet is known as the Red Planet?", a: ["Earth", "Mars", "Venus", "Jupiter"], correct: 1 },
+        { q: "What is H2O commonly known as?", a: ["Salt", "Water", "Oxygen", "Acid"], correct: 1 },
+        { q: "How many continents are there?", a: ["5", "6", "7", "8"], correct: 2 },
+        { q: "Who painted the Mona Lisa?", a: ["Da Vinci", "Picasso", "Michelangelo", "Raphael"], correct: 0 },
+        { q: "What is the largest mammal?", a: ["Elephant", "Blue whale", "Shark", "Giraffe"], correct: 1 },
+        { q: "Which ocean is the largest?", a: ["Atlantic", "Indian", "Pacific", "Arctic"], correct: 2 },
+        { q: "What gas do plants breathe in?", a: ["CO2", "O2", "H2", "N2"], correct: 0 },
+        { q: "Who discovered gravity?", a: ["Newton", "Einstein", "Tesla", "Darwin"], correct: 0 },
+        { q: "What is the currency of Japan?", a: ["Won", "Yen", "Dollar", "Peso"], correct: 1 },
+        { q: "Which animal lays eggs?", a: ["Cow", "Cat", "Hen", "Dog"], correct: 2 },
+        { q: "What is 12 x 12?", a: ["122", "120", "144", "124"], correct: 2 },
+        { q: "Which metal is liquid at room temperature?", a: ["Gold", "Mercury", "Iron", "Silver"], correct: 1 },
+        { q: "Which country has the Eiffel Tower?", a: ["Italy", "Spain", "France", "Germany"], correct: 2 },
+        { q: "Which fruit is yellow and curved?", a: ["Apple", "Banana", "Grapes", "Mango"], correct: 1 },
+        { q: "Who wrote 'Romeo and Juliet'?", a: ["Shakespeare", "Homer", "Dante", "Plato"], correct: 0 },
+        { q: "Which planet is closest to the sun?", a: ["Venus", "Mercury", "Mars", "Earth"], correct: 1 },
+        { q: "How many legs does a spider have?", a: ["6", "8", "10", "12"], correct: 1 },
+        { q: "What is the boiling point of water?", a: ["90°C", "100°C", "120°C", "80°C"], correct: 1 },
+        { q: "Which color is formed by mixing red and white?", a: ["Pink", "Orange", "Purple", "Brown"], correct: 0 },
+        { q: "What is 5 squared?", a: ["10", "15", "20", "25"], correct: 3 },
+    ];
+
+    document.getElementById("menu").style.display = "block";
+
+    function validateName() {
+        const input = document.getElementById("playerName");
+        const name = input.value.trim();
+        if (!name) return showMessage("Veuillez entrer un nom !");
+        if (name.toLowerCase().includes(AUTHOR.toLowerCase()))
+            return showMessage("Ce nom n'est pas autorisé (identique à l'auteur) !");
+        playerName = name;
+        document.getElementById("menu").style.display = "none";
+        document.getElementById("welcome").style.display = "block";
+    }
+
+    function showMessage(msg) {
+        document.getElementById("message").innerText = msg;
+    }
+
+    function goToMode() {
+        document.getElementById("welcome").style.display = "none";
+        document.getElementById("modeSelect").style.display = "block";
+    }
+
+    function openShop() {
+        document.getElementById("modeSelect").style.display = "none";
+        document.getElementById("shop").style.display = "block";
+    }
+
+    function backToMode() {
+        document.getElementById("shop").style.display = "none";
+        document.getElementById("modeSelect").style.display = "block";
+    }
+
+    function startGame(selectedMode) {
+        mode = selectedMode;
+        questionIndex = 0;
+        money = 0;
+        document.getElementById("modeSelect").style.display = "none";
+        document.getElementById("game").style.display = "block";
+        showQuestion();
+        updateMoney();
+    }
+
+    function showQuestion() {
+        if (mode === "nouveau" && questionIndex >= 15) return endGame();
+        const q = questions[questionIndex % questions.length];
+        document.getElementById("questionBox").innerText = q.q;
+
+        const shuffled = q.a.map((val, i) => ({ val, i }))
+                            .sort(() => Math.random() - 0.5);
+        const div = document.getElementById("choices");
+        div.innerHTML = "";
+        shuffled.forEach(opt => {
+            const c = document.createElement("div");
+            c.className = "choice";
+            c.innerText = opt.val;
+            c.onclick = () => checkAnswer(opt.i, q.correct, c);
+            div.appendChild(c);
+        });
+    }
+
+    function checkAnswer(i, correct, el) {
+        const all = document.querySelectorAll(".choice");
+        all.forEach(ch => ch.onclick = null);
+        if (i === correct) {
+            el.classList.add("correct");
+            money = Math.min(moneyLevels[Math.min(questionIndex, moneyLevels.length - 1)], 1000000);
+            questionIndex++;
+        } else {
+            el.classList.add("wrong");
+            all[correct].classList.add("correct");
+            money = Math.max(money / 2, 0);
+            if (mode === "classique") return setTimeout(endGame, 1500);
+        }
+        updateMoney();
+        setTimeout(showQuestion, 1200);
+    }
+
+    function updateMoney() {
+        document.getElementById("money-box").innerText = `Votre argent : ${money} Ar`;
+    }
+
+    function endGame() {
+        document.getElementById("game").style.display = "none";
+        document.getElementById("result").style.display = "block";
+        let txt = `${playerName}, votre argent final est : ${money} Ar`;
+        if (money < 5000) txt += " (aucun gain)";
+        document.getElementById("resultText").innerText = txt;
+        document.getElementById("errorMessage").innerHTML = 
+          '<span style="color:red;">⚠️ erreur dans la question ?</span><br>Contactez : <a href="mailto:sstvmadagascar6@gmail.com">sstvmadagascar6@gmail.com</a>';
+    }
+
+    function restart() {
+        document.getElementById("result").style.display = "none";
+        document.getElementById("modeSelect").style.display = "block";
+    }
+</script>
+</body>
+</html>
