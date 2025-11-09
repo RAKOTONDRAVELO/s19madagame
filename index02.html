@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S19 MADA Game Quiz</title>
+    <link rel="stylesheet" href="style.css" /> 
+</head>
+<body>
+    <!-- Conteneur principal du jeu -->
+    <div id="game-container">
+        
+        <!-- Écran de Menu Principal -->
+        <div id="menu-screen" class="screen">
+            <h1>S19 MADA Game</h1>
+            <p>Entrez votre nom:</p>
+            <input type="text" id="player-name-input" placeholder="Votre Nom">
+            <button onclick="startGame()">Jouer</button>
+            <button onclick="confirmQuit()">Quitter</button>
+            <div class="footer">
+                <p>Version 1.0</p>
+                <p>Auteur: SYLVAIN SOLOFONIAINA</p>
+                <p>(c) 2025</p>
+            </div>
+        </div>
+
+        <!-- NOUVEL ÉCRAN : Sélection de niveau -->
+        <div id="level-select-screen" class="screen" style="display: none;">
+            <h1>Sélectionner un Niveau</h1>
+            <p id="welcome-message-header"></p>
+            <div id="level-select-container">
+                <!-- Les boutons de niveau seront générés ici par JS -->
+            </div>
+            <button onclick="goToMenu()">Menu Principal</button>
+        </div>
+
+        <!-- Écran du Quiz -->
+        <div id="quiz-screen" class="screen" style="display: none;">
+            <div class="header">
+                <span id="level-score-info">Niveau 1 - Score: 0</span>
+                <span id="question-count-info">Question 1/5</span>
+                <span id="time-info">Temps: 00:00</span>
+            </div>
+            
+            <h2 id="question-text"></h2>
+            
+            <div id="options-container">
+                <!-- Les boutons de réponse seront générés ici par JS -->
+            </div>
+            
+            <button class="quit-quiz-btn" onclick="confirmQuit()">Quitter la partie</button>
+        </div>
+
+        <!-- Écran de Fin de Niveau / Fin de Jeu -->
+        <div id="end-screen" class="screen" style="display: none;">
+            <h1 id="end-title">RÉSULTATS DU NIVEAU</h1>
+            <p id="end-message"></p>
+            <p id="score-summary"></p>
+            <p id="time-summary"></p>
+
+            <button id="continue-btn" onclick="startLevel()">Continuer</button>
+            <button onclick="goToLevelSelect()">Retour aux Niveaux</button>
+        </div>
+
+        <!-- Écran de Confirmation de Sortie (Overlay) -->
+        <div id="quit-confirm-overlay" class="overlay" style="display: none;">
+            <div class="overlay-content">
+                <p>Voulez-vous vraiment quitter :</p>
+                <button onclick="window.close(); if (typeof Gadget != 'undefined') Gadget.fechar();">OUI</button>
+                <button onclick="cancelQuit()">NON</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
