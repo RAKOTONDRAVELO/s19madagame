@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#2563eb" />
+  <title>S19 School Planner</title>
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+  <meta name="description" content="S19 School Planner — organise ta vie scolaire: emploi du temps, rappels, todo, statistiques. Offline-ready." />
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="topbar">
+      <div class="brand">
+        <img src="assets/logo-192.png" alt="logo" class="logo" />
+        <div>
+          <h1>S19 School Planner</h1>
+          <div class="meta">Version 1.0 • Auteur: SYLVAIN SOLOFONIAINA</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="theme-toggle" aria-label="Toggle theme">🌙</button>
+        <button id="export-btn" title="Exporter/Importer">⤓</button>
+        <button id="help-btn" title="Aide">❔</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="sidebar">
+        <div class="profile">
+          <input id="student-name" placeholder="Ton nom (ex: Rakotondravelo)" />
+          <select id="student-class">
+            <option value="">Choisis ta classe (ex: 10ème)">-- Classe --</option>
+            <option>Primaire</option>
+            <option>Collège</option>
+            <option>Lycée</option>
+            <option>Université</option>
+          </select>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-btn active" data-view="schedule">Emploi du temps</button>
+          <button class="nav-btn" data-view="todo">To‑Do</button>
+          <button class="nav-btn" data-view="agenda">Agenda</button>
+          <button class="nav-btn" data-view="stats">Statistiques</button>
+          <button class="nav-btn" data-view="settings">Paramètres</button>
+        </nav>
+
+        <div class="quick-add">
+          <h4>Ajout rapide</h4>
+          <input id="quick-title" placeholder="Matière / Tâche" />
+          <input id="quick-time" type="time" />
+          <button id="quick-add-btn">+ Ajouter</button>
+        </div>
+
+        <footer class="attribution">S19 School Planner — Offline • PWA-ready</footer>
+      </section>
+
+      <section class="content">
+        <!-- Views -->
+        <div id="view-schedule" class="view">
+          <div class="view-header">
+            <h2>Emploi du temps</h2>
+            <button id="add-slot">+ Nouveau cours</button>
+          </div>
+
+          <div class="schedule-grid" id="schedule-grid">
+            <!-- Days / hours rendered by JS -->
+          </div>
+        </div>
+
+        <div id="view-todo" class="view hidden">
+          <div class="view-header">
+            <h2>To‑Do List</h2>
+            <div>
+              <input id="todo-input" placeholder="Nouvelle tâche..." />
+              <button id="todo-add">Ajouter</button>
+            </div>
+          </div>
+          <ul id="todo-list" class="todo-list"></ul>
+        </div>
+
+        <div id="view-agenda" class="view hidden">
+          <div class="view-header">
+            <h2>Agenda</h2>
+            <input type="date" id="agenda-date" />
+          </div>
+          <div id="agenda-items"></div>
+        </div>
+
+        <div id="view-stats" class="view hidden">
+          <h2>Statistiques</h2>
+          <div class="stats-grid">
+            <div class="card"><h3 id="stat-total-courses">0</h3><p>Cours programmés</p></div>
+            <div class="card"><h3 id="stat-tasks">0</h3><p>Tâches</p></div>
+            <div class="card"><h3 id="stat-free-hours">0</h3><p>Heures libres / semaine</p></div>
+          </div>
+        </div>
+
+        <div id="view-settings" class="view hidden">
+          <h2>Paramètres</h2>
+          <div class="settings-grid">
+            <label>Mode
+              <select id="setting-theme">
+                <option value="auto">Auto (système)</option>
+                <option value="light">Clair</option>
+                <option value="dark">Sombre</option>
+              </select>
+            </label>
+            <label>Rappels
+              <select id="setting-reminders">
+                <option value="none">Désactivés</option>
+                <option value="5">5 min avant</option>
+                <option value="15">15 min avant</option>
+                <option value="30">30 min avant</option>
+              </select>
+            </label>
+            <label>Sauvegarde
+              <button id="export-json">Exporter JSON</button>
+              <button id="import-json">Importer JSON</button>
+              <input type="file" id="import-file" accept="application/json" class="hidden" />
+            </label>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Dialogs (hidden) -->
+    <div id="modal" class="modal hidden" role="dialog" aria-hidden="true"></div>
+
+    <script src="script.js"></script>
+  </div>
+</body>
+</html>

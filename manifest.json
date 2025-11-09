@@ -1,0 +1,12 @@
+{
+  "name": "S19 School Planner",
+  "short_name": "S19Planner",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f9ff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {"src":"assets/logo-192.png","sizes":"192x192","type":"image/png"},
+    {"src":"assets/logo-512.png","sizes":"512x512","type":"image/png"}
+  ]
+}
